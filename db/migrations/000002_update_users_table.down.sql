@@ -1,0 +1,1 @@
+ALTER TABLE sumibloggers DROP COLUMN IF EXISTS cost;

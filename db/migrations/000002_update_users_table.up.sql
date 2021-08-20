@@ -1,0 +1,1 @@
+ALTER TABLE sumibloggers ADD COLUMN cost bigserial;
