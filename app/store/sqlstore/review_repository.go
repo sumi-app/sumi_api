@@ -13,8 +13,8 @@ type ReviewsRepository struct {
 
 func (r ReviewsRepository) Create(review *models.Review) (*models.Review, error) {
 	if err := r.store.db.QueryRow(
-		"INSERT INTO sumireviews (blogger_id, press_tour_id, post_link, mark) VALUES ($1, $2, $3, $4) RETURNING id",
-		review.BloggerID, review.PressTourId, review.PostLink, review.Mark,
+		"INSERT INTO sumireviews (blogger_id, post_link) VALUES ($1, $2) RETURNING id",
+		review.BloggerID, review.PostLink,
 	).Scan(&review.ID); err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -33,16 +33,6 @@ func (r *ReviewsRepository) GetAll() ([]*models.Review, error) {
 	reviews = ParseReviews(rows)
 	return reviews, nil
 
-}
-
-func (r *ReviewsRepository) GetByPressTourId(id int) ([]*models.Review, error) {
-	var reviews []*models.Review
-	rows, err := r.store.db.Query("SELECT * FROM sumireviews WHERE press_tour_id = $1", id)
-	if err != nil {
-		return nil, err
-	}
-	reviews = ParseReviews(rows)
-	return reviews, nil
 }
 
 func (r *ReviewsRepository) Delete() error {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"sumi/app/models"
 	"sumi/app/utils"
 )
@@ -48,28 +47,14 @@ func (s *server) HandleCreateReview() http.HandlerFunc {
 func (s *server) HandleGetReviews() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		pressTourId := r.URL.Query().Get("press_tour_id")
 
-		if len(pressTourId) > 0 {
-			id, err := strconv.Atoi(pressTourId)
-			if err == nil{
-				bloggers, err := s.store.Review().GetByPressTourId(id)
-				if err != nil {
-					s.error(w, r, http.StatusInternalServerError, err)
-					return
-				}
-				s.respond(w, r, http.StatusOK, bloggers)
-				return
-			}
-		}
-
-		bloggers, err := s.store.Review().GetAll()
+		reviews, err := s.store.Review().GetAll()
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.respond(w, r, http.StatusOK, bloggers)
+		s.respond(w, r, http.StatusOK, reviews)
 	}
 }
 
