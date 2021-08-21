@@ -37,7 +37,7 @@ func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) 
 
 func (r *BloggersRepository) GetAll(isSelected bool, isFavorite bool) ([]*models.Blogger, error){
 
-	sqlQuery := "SELECT * FROM sumibloggers WHERE is_selected = $1 AND isFavorite = $2"
+	sqlQuery := "SELECT * FROM sumibloggers WHERE is_selected = $1 AND is_favorite = $2"
 
 	var bloggers []*models.Blogger
 		rows, err := r.store.db.Query(sqlQuery, isSelected, isFavorite)
