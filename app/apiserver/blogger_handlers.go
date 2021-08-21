@@ -34,6 +34,13 @@ func (s *server) HandleCreateBlogger() http.HandlerFunc {
 			return
 		}
 
+		_, existBlogger := s.store.Blogger().GetByLogin(b.Login)
+		if existBlogger != nil {
+			s.respond(w, r, http.StatusCreated, existBlogger)
+			fmt.Println("Exist blogger")
+			return
+		}
+
 		createdBlogger, err := s.store.Blogger().Create(&b)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)

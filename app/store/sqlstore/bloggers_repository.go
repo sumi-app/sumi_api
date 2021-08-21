@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"database/sql"
 	"fmt"
 	"sumi/app/models"
 	"sumi/app/store"
@@ -38,32 +39,51 @@ func (r *BloggersRepository) GetAll() ([]*models.Blogger, error){
 		if err != nil {
 			return nil, err
 		}
+	return ParseBloggers(rows, bloggers)
 
-		for rows.Next() {
-			b := models.Blogger{}
+}
 
-			err := rows.Scan(
-				&b.ID,
-				&b.Name,
-				&b.Login,
-				&b.Type,
-				&b.Description,
-				&b.SubsCount,
-				&b.AvatarUrl,
-				&b.SocialNetwork,
-				&b.Cost,
-				&b.Coverage,
-			)
+func (r *BloggersRepository) GetByLogin(login string) (*models.Blogger, error){
 
-			if err != nil {
-				continue
-			}
+	b := &models.Blogger{}
+	if err :=  r.store.db.QueryRow("SELECT * FROM sumibloggers WHERE login = $1", login).Scan(
+		&b.ID,
+		&b.Name,
+		&b.Login,
+		&b.Description,
+		&b.Cost,
+		&b.SocialNetwork,
+	); err != nil {
+		return nil, err
+	}
+	return b, nil
+}
 
-			bloggers = append(bloggers, &b)
+func ParseBloggers(rows *sql.Rows, bloggers []*models.Blogger) ([]*models.Blogger, error) {
+	for rows.Next() {
+		b := models.Blogger{}
+
+		err := rows.Scan(
+			&b.ID,
+			&b.Name,
+			&b.Login,
+			&b.Type,
+			&b.Description,
+			&b.SubsCount,
+			&b.AvatarUrl,
+			&b.SocialNetwork,
+			&b.Cost,
+			&b.Coverage,
+		)
+
+		if err != nil {
+			continue
 		}
 
-		return bloggers, nil
+		bloggers = append(bloggers, &b)
+	}
 
+	return bloggers, nil
 }
 
 func (r *BloggersRepository) Delete() error {
