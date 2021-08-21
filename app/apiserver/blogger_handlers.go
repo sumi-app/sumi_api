@@ -56,8 +56,12 @@ func (s *server) HandleCreateBlogger() http.HandlerFunc {
 func (s *server) HandleGetBloggers() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		strSelected := r.URL.Query().Get("is_selected")
+		strFavorite := r.URL.Query().Get("is_favorite")
+		isSelected := strSelected == "true"
+		isFavorite := strFavorite == "true"
 
-		bloggers, err := s.store.Blogger().GetAll()
+		bloggers, err := s.store.Blogger().GetAll(isSelected, isFavorite)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return

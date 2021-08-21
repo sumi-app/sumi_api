@@ -14,6 +14,7 @@ type Blogger struct {
 	Cost          int    `json:"cost"`
 	Coverage      int    `json:"coverage"`
 	IsSelected    bool   `json:"is_selected"`
+	IsFavorite    bool   `json:"is_favorite"`
 }
 
 // Validate ...

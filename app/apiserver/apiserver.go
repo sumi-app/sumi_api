@@ -18,7 +18,7 @@ func Start(config *Config) error {
 
 	var port string
 	envPort := os.Getenv("PORT")
-	if len(envPort) < 0{
+	if len(envPort) <= 0{
 		port = "8080"
 	} else {
 		port = envPort

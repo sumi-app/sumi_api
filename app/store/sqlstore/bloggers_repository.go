@@ -15,7 +15,7 @@ type BloggersRepository struct {
 
 func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) {
 	if err := r.store.db.QueryRow(
-		"INSERT INTO sumibloggers (name, login, type, description, subs_count, avatar, social_network, cost, coverage, is_selected) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
+		"INSERT INTO sumibloggers (name, login, type, description, subs_count, avatar, social_network, cost, coverage, is_selected, is_favorite) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id",
 		b.Name,
 		b.Login,
 		b.Type,
@@ -26,6 +26,7 @@ func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) 
 		b.Cost,
 		b.Coverage,
 		b.IsSelected,
+		false,
 	).Scan(&b.ID); err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -34,10 +35,12 @@ func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) 
 	return b, nil
 }
 
-func (r *BloggersRepository) GetAll() ([]*models.Blogger, error){
+func (r *BloggersRepository) GetAll(isSelected bool, isFavorite bool) ([]*models.Blogger, error){
+
+	sqlQuery := "SELECT * FROM sumibloggers WHERE is_selected = $1 AND isFavorite = $2"
 
 	var bloggers []*models.Blogger
-		rows, err := r.store.db.Query("SELECT * FROM sumibloggers")
+		rows, err := r.store.db.Query(sqlQuery, isSelected, isFavorite)
 		if err != nil {
 			return nil, err
 		}
@@ -56,6 +59,7 @@ func (r *BloggersRepository) GetByLogin(login string) (*models.Blogger, error){
 		&b.Cost,
 		&b.SocialNetwork,
 		&b.IsSelected,
+		&b.IsFavorite,
 	); err != nil {
 		return nil, err
 	}
@@ -78,6 +82,7 @@ func ParseBloggers(rows *sql.Rows, bloggers []*models.Blogger) ([]*models.Blogge
 			&b.Cost,
 			&b.Coverage,
 			&b.IsSelected,
+			&b.IsFavorite,
 		)
 
 		if err != nil {
