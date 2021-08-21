@@ -4,21 +4,31 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 	"sumi/app/store"
 	"sumi/app/store/sqlstore"
 )
 
-const PORT = 8080
-
 func Start(config *Config) error {
+
 	store, err := configureStore(config)
 	if err != nil {
 		return err
 	}
 
+	var port string
+	envPort := os.Getenv("DATABASE_URL")
+	if len(envPort) < 0{
+		port = "8080"
+	} else {
+		port = envPort
+	}
+
+
+
 	srv := NewServer(store)
-	fmt.Println("Api server running on port", PORT)
-	return http.ListenAndServe(fmt.Sprintf(":%v",PORT), srv)
+	fmt.Println("Api server running on port", port)
+	return http.ListenAndServe(fmt.Sprintf(":%v", port), srv)
 }
 
 
