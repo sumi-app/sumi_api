@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sumi/app/models"
 	"sumi/app/utils"
+	"sumi/app/utils/convertors"
 )
 
 func (s *server) HandleCreateBlogger() http.HandlerFunc {
@@ -34,12 +35,12 @@ func (s *server) HandleCreateBlogger() http.HandlerFunc {
 			return
 		}
 
-		_, existBlogger := s.store.Blogger().GetByLogin(b.Login)
-		if existBlogger != nil {
-			s.respond(w, r, http.StatusCreated, existBlogger)
-			fmt.Println("Exist blogger")
-			return
-		}
+		//_, existBlogger := s.store.Blogger().GetByLogin(b.Login)
+		//if existBlogger != nil {
+		//	s.respond(w, r, http.StatusOK, existBlogger)
+		//	fmt.Println("Exist blogger")
+		//	return
+		//}
 
 		createdBlogger, err := s.store.Blogger().Create(&b)
 		if err != nil {
@@ -71,6 +72,26 @@ func (s *server) HandleDeleteBloggers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		err := s.store.Blogger().Delete()
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, nil)
+	}
+}
+
+func (s *server) HandleSelectBloggers() http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		ids := []string{}
+		idsList := r.URL.Query().Get("ids")
+
+		if len(idsList) > 0 {
+			ids = convertors.ParseStringsList(idsList)
+		}
+
+		err := s.store.Blogger().Select(ids)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return

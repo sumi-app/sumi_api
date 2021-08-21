@@ -8,4 +8,5 @@ type BloggersRepository interface {
 	GetAll() ([]*models.Blogger, error)
 	GetByLogin(login string) (*models.Blogger, error)
 	Delete() error
+	Select(ids []string) error
 }

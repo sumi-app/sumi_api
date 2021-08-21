@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"sumi/app/models"
 	"sumi/app/store"
 )
@@ -14,7 +15,7 @@ type BloggersRepository struct {
 
 func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) {
 	if err := r.store.db.QueryRow(
-		"INSERT INTO sumibloggers (name, login, type, description, subs_count, avatar, social_network, cost, coverage) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
+		"INSERT INTO sumibloggers (name, login, type, description, subs_count, avatar, social_network, cost, coverage, is_selected) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
 		b.Name,
 		b.Login,
 		b.Type,
@@ -24,6 +25,7 @@ func (r *BloggersRepository) Create(b *models.Blogger) (*models.Blogger, error) 
 		b.SocialNetwork,
 		b.Cost,
 		b.Coverage,
+		b.IsSelected,
 	).Scan(&b.ID); err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -53,6 +55,7 @@ func (r *BloggersRepository) GetByLogin(login string) (*models.Blogger, error){
 		&b.Description,
 		&b.Cost,
 		&b.SocialNetwork,
+		&b.IsSelected,
 	); err != nil {
 		return nil, err
 	}
@@ -74,6 +77,7 @@ func ParseBloggers(rows *sql.Rows, bloggers []*models.Blogger) ([]*models.Blogge
 			&b.SocialNetwork,
 			&b.Cost,
 			&b.Coverage,
+			&b.IsSelected,
 		)
 
 		if err != nil {
@@ -88,6 +92,23 @@ func ParseBloggers(rows *sql.Rows, bloggers []*models.Blogger) ([]*models.Blogge
 
 func (r *BloggersRepository) Delete() error {
 	res, err := r.store.db.Exec("DELETE FROM sumibloggers")
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	} else {
+		return store.ErrNoRowsAffected
+	}
+}
+
+func (r *BloggersRepository) Select(ids []string) error {
+	idsQuery := fmt.Sprintf(" WHERE id in (%s)", strings.Join(ids, ", "))
+	res, err := r.store.db.Exec("UPDATE sumibloggers SET is_selected = not is_selected" + idsQuery)
 	if err != nil {
 		return err
 	}

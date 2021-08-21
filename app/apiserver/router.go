@@ -9,6 +9,7 @@ func (s *server) configureRouter() {
 	bloggerRouter.HandleFunc("", s.HandleCreateBlogger()).Methods("POST")
 	bloggerRouter.HandleFunc("", s.HandleGetBloggers()).Methods("GET")
 	bloggerRouter.HandleFunc("", s.HandleDeleteBloggers()).Methods("DELETE")
+	bloggerRouter.HandleFunc("/select", s.HandleSelectBloggers()).Methods("PATCH")
 
 
 	generalRouter := apiRouter.PathPrefix("/general").Subrouter()

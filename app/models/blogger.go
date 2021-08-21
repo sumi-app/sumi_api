@@ -13,6 +13,7 @@ type Blogger struct {
 	AvatarUrl     string `json:"avatar"`
 	Cost          int    `json:"cost"`
 	Coverage      int    `json:"coverage"`
+	IsSelected    bool   `json:"is_selected"`
 }
 
 // Validate ...
