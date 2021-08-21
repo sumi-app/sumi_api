@@ -13,8 +13,8 @@ type ReviewsRepository struct {
 
 func (r ReviewsRepository) Create(review *models.Review) (*models.Review, error) {
 	if err := r.store.db.QueryRow(
-		"INSERT INTO sumireviews (blogger_id, post_link) VALUES ($1, $2) RETURNING id",
-		review.BloggerID, review.PostLink,
+		"INSERT INTO sumireviews (blogger_id, post_link, likes) VALUES ($1, $2, $3) RETURNING id",
+		review.BloggerID, review.PostLink, review.Likes,
 	).Scan(&review.ID); err != nil {
 		fmt.Println(err)
 		return nil, err

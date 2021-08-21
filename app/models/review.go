@@ -6,6 +6,7 @@ type Review struct {
 	ID        int    `json:"id"`
 	BloggerID int    `json:"blogger_id"`
 	PostLink  string `json:"post_link"`
+	Likes     int    `json:"likes"`
 }
 
 // Validate ...

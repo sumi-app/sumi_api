@@ -14,6 +14,7 @@ func ParseReviews(rows *sql.Rows) []*models.Review {
 			&r.ID,
 			&r.BloggerID,
 			&r.PostLink,
+			&r.Likes,
 		)
 
 		if err != nil {
