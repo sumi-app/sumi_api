@@ -48,6 +48,28 @@ func (r *BloggersRepository) GetAll(isSelected bool, isFavorite bool) ([]*models
 
 }
 
+func (r *BloggersRepository) GetById(id int) (*models.Blogger, error){
+
+	b := &models.Blogger{}
+	if err :=  r.store.db.QueryRow("SELECT * FROM sumibloggers WHERE id = $1", id).Scan(
+		&b.ID,
+		&b.Name,
+		&b.Login,
+		&b.Type,
+		&b.Description,
+		&b.SubsCount,
+		&b.AvatarUrl,
+		&b.SocialNetwork,
+		&b.Cost,
+		&b.Coverage,
+		&b.IsSelected,
+		&b.IsFavorite,
+	); err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
 func (r *BloggersRepository) GetByLogin(login string) (*models.Blogger, error){
 
 	b := &models.Blogger{}
@@ -55,9 +77,13 @@ func (r *BloggersRepository) GetByLogin(login string) (*models.Blogger, error){
 		&b.ID,
 		&b.Name,
 		&b.Login,
+		&b.Type,
 		&b.Description,
-		&b.Cost,
+		&b.SubsCount,
+		&b.AvatarUrl,
 		&b.SocialNetwork,
+		&b.Cost,
+		&b.Coverage,
 		&b.IsSelected,
 		&b.IsFavorite,
 	); err != nil {

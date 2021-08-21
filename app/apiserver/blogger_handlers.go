@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"sumi/app/models"
 	"sumi/app/utils"
 	"sumi/app/utils/convertors"
@@ -56,6 +57,22 @@ func (s *server) HandleCreateBlogger() http.HandlerFunc {
 func (s *server) HandleGetBloggers() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		idQuery := r.URL.Query().Get("id")
+
+
+		if len(idQuery) > 0 {
+			id, err := strconv.Atoi(idQuery)
+			blogger, err := s.store.Blogger().GetById(id)
+			if err != nil {
+				s.error(w, r, http.StatusInternalServerError, err)
+				return
+			}
+
+			s.respond(w, r, http.StatusOK, blogger)
+			return
+		}
+
 		strSelected := r.URL.Query().Get("is_selected")
 		strFavorite := r.URL.Query().Get("is_favorite")
 		isSelected := strSelected == "true"
