@@ -17,14 +17,12 @@ func Start(config *Config) error {
 	}
 
 	var port string
-	envPort := os.Getenv("DATABASE_URL")
+	envPort := os.Getenv("PORT")
 	if len(envPort) < 0{
 		port = "8080"
 	} else {
 		port = envPort
 	}
-
-
 
 	srv := NewServer(store)
 	fmt.Println("Api server running on port", port)
@@ -48,10 +46,8 @@ func newDbConnect(databaseUrl string) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
-
 	return db, nil
 }
